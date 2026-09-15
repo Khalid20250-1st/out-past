@@ -1,0 +1,7 @@
+node_modules/
+dist/
+release/
+build/afm
+.DS_Store
+.env
+*.log
