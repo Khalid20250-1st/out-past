@@ -1,0 +1,44 @@
+name: Build
+
+# Builds the Windows installer on a Windows runner. Run it from the Actions tab
+# (workflow_dispatch) or by pushing a version tag like v1.0.0. The installer is
+# uploaded as a build artifact.
+#
+# The Mac build is done locally, not here: the Apple Intelligence engine (afm)
+# must be compiled on macOS 26+ with the FoundationModels SDK, which the hosted
+# macOS runners do not yet have. On Windows KAI runs on the Ollama fallback plus
+# the local knowledge base, so no native helper is needed.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build Windows installer
+        run: npm run build:win
+        env:
+          # No code-signing cert in CI; ship an unsigned installer.
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: out-past-windows
+          path: |
+            release/*.exe
+            release/*.exe.blockmap
+          if-no-files-found: error

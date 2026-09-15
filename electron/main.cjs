@@ -39,7 +39,7 @@ function afmPath() {
 function appleAnswer(system, prompt) {
   return new Promise((resolve) => {
     const bin = afmPath()
-    if (!bin || process.arch !== 'arm64') return resolve(null)
+    if (!bin || process.platform !== 'darwin' || process.arch !== 'arm64') return resolve(null)
     let out = ''
     let done = false
     let child

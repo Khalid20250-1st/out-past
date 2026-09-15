@@ -27,9 +27,28 @@ The blocking / "Lock In" enforcement engine (system-level focus locks and site
 blocking) is **intentionally not part of this open source build**. The "Lock In"
 tab is present as a placeholder so the rest of the app builds and runs unchanged.
 
+## Windows
+
+Out Past runs on Windows too. The UI, calendar, and KAI all work; the only
+difference is the AI engine: there is no Apple Intelligence tier on Windows, so
+KAI runs on the **Ollama ~1GB model plus the local knowledge base**. Install
+[Ollama](https://ollama.com) and `ollama pull qwen2.5:1.5b` for the full local
+mentor; without it KAI still answers from the knowledge base.
+
+Build the Windows installer with `npm run build:win`, or let CI do it: the
+included GitHub Actions workflow (`.github/workflows/build.yml`) builds the
+`.exe` on a Windows runner. Run it from the Actions tab or by pushing a `v*`
+tag, then download the installer from the run's artifacts. The installer is
+unsigned, so Windows SmartScreen will warn on first launch (More info -> Run
+anyway).
+
+The blocking / Lock In enforcement engine is macOS-only and is not part of this
+open build on any platform.
+
 ## Requirements
 
-- macOS (Apple silicon recommended for the on-device Apple Intelligence engine).
+- macOS (Apple silicon recommended for the on-device Apple Intelligence engine)
+  or Windows 10/11.
 - Node 18+.
 - A Google Cloud OAuth **Desktop** client (free) if you want calendar sync — you
   paste your own Client ID / Secret into the app on first run; they are stored
