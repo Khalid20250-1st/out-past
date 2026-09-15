@@ -1,11 +1,12 @@
 # Out Past
 
-Out Past is a calm, white, Claude-style macOS focus and mission app. It pulls
-your Google Calendars together, shows how much of your day you actually used
-versus wasted, helps you set a north star, a mission, and a daily kill list, and
-gives you a built-in AI mentor called **KAI**.
+Out Past is a calm, white, Claude-style focus and mission app for **macOS and
+Windows**. It pulls your Google Calendars together, shows how much of your day
+you actually used versus wasted, helps you set a north star, a mission, and a
+daily kill list, and gives you a built-in AI mentor called **KAI**.
 
-Built with Electron + React + Vite.
+Built with Electron + React + Vite. Free, open source, and the AI runs fully on
+your own machine.
 
 ## KAI runs entirely on your device
 
