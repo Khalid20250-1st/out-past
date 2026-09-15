@@ -8,6 +8,24 @@ daily kill list, and gives you a built-in AI mentor called **KAI**.
 Built with Electron + React + Vite. Free, open source, and the AI runs fully on
 your own machine.
 
+## Screenshots
+
+**Home — where your time is going**
+
+![Home](docs/screenshots/home.png)
+
+**Planning — north star, mission, and daily kill list**
+
+![Planning](docs/screenshots/planning.png)
+
+**Calendar — a calm, Notion-style day view**
+
+![Calendar](docs/screenshots/calendar.png)
+
+**KAI — your local AI mentor**
+
+![KAI](docs/screenshots/kai.png)
+
 ## KAI runs entirely on your device
 
 KAI is a fully local AI mentor. It needs no API key, no account, and no internet:
