@@ -22,6 +22,10 @@ your own machine.
 
 ![Calendar](docs/screenshots/calendar.png)
 
+**Content — one great thing to watch, no feed, no rabbit hole**
+
+![Content](docs/screenshots/content.png)
+
 **KAI — your local AI mentor**
 
 ![KAI](docs/screenshots/kai.png)
