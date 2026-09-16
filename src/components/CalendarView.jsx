@@ -562,9 +562,7 @@ function DayGrid({ gridRef, dayEvents, allDay = [], viewDate, now, drag, onGridD
         <HourLabels />
       </div>
       <div ref={gridRef} data-grid="1" data-drop="day" onMouseDown={onGridDown} style={{ position: 'relative', flex: 1, height: GRID_PX, cursor: 'crosshair' }}>
-        {/* Yesterday and tomorrow are dimmed so the day you're on still reads as the day you're on. */}
-        <div data-grid="1" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: topPx(0), background: 'rgba(0,0,0,0.16)', pointerEvents: 'none' }} />
-        <div data-grid="1" style={{ position: 'absolute', left: 0, right: 0, top: topPx(DAY_MIN), bottom: 0, background: 'rgba(0,0,0,0.16)', pointerEvents: 'none' }} />
+        {/* Yesterday/tomorrow dimming removed on the white theme — the Today/Tomorrow labels mark the boundary. */}
         <HourLines />
         <DayEdges />
 
