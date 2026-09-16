@@ -1332,6 +1332,24 @@ body { font-family: var(--body); }
 }
 .ev-save:hover { background: var(--clay-2); }
 
+/* Custom repeat picker (event editor) — app-styled, replaces the OS dropdown. */
+.ev-row-dd { position: relative; }
+.ev-dd-wrap { position: relative; flex: 1; }
+.ev-dd { display: flex; align-items: center; justify-content: space-between; width: 100%; border: none; background: none; cursor: pointer; font-family: var(--body); font-size: 15px; color: var(--text); padding: 2px 0; }
+.ev-dd-caret { color: var(--muted); flex-shrink: 0; }
+.ev-menu-scrim { position: fixed; inset: 0; z-index: 40; }
+.ev-menu { position: absolute; z-index: 41; top: 28px; left: -8px; min-width: 232px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 14px 44px rgba(0,0,0,0.16); padding: 6px; display: flex; flex-direction: column; }
+.ev-menu-item { display: flex; align-items: center; gap: 6px; text-align: left; border: none; background: none; cursor: pointer; font-family: var(--body); font-size: 14px; color: var(--text); padding: 9px 10px; border-radius: 9px; }
+.ev-menu-item:hover { background: var(--panel-2); }
+.ev-menu-item.on { color: var(--clay); font-weight: 600; }
+.ev-check { width: 14px; flex-shrink: 0; color: var(--clay); }
+.ev-cust { display: flex; flex-direction: column; gap: 12px; padding: 2px 0; flex: 1; }
+.ev-cust-line { display: flex; align-items: center; gap: 10px; font-family: var(--body); font-size: 14px; color: var(--muted-2); }
+.ev-num { width: 54px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); font-family: var(--body); font-size: 14px; color: var(--text); padding: 6px 8px; outline: none; }
+.ev-until { border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); font-family: var(--body); font-size: 14px; color: var(--text); padding: 6px 8px; outline: none; }
+.ev-forever { color: var(--muted); font-size: 13px; }
+.ev-clear { border: none; background: none; color: var(--clay); font-size: 12px; cursor: pointer; font-family: var(--body); }
+
 /* ===========================================================================
    Out Past 5.0 — the Claude Console shell: sidebar left, page right.
    Appended last, so it wins over the old top-bar layout.

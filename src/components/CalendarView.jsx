@@ -937,12 +937,49 @@ function EditModal({ ev, onSave, onDelete, onCancel }) {
   const [title, setTitle] = useState(ev.summary || '')
   const [description, setDescription] = useState(ev.description || '')
   const [location, setLocation] = useState(ev.location || '')
-  const [repeat, setRepeat] = useState('keep')
   const isRecurring = !!ev.recurringEventId
+  const [repeat, setRepeat] = useState(isRecurring ? 'keep' : 'none')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [ivl, setIvl] = useState(1)        // "every N"
+  const [unit, setUnit] = useState('week') // day | week | month
+  const [days, setDays] = useState([])     // 0..6 = Sun..Sat, for weekly
+  const [until, setUntil] = useState('')   // 'YYYY-MM-DD', blank = forever
   const dur = Math.max(0, (ev.eMin || 0) - (ev.sMin || 0))
   const durTxt = (m) => { const h = Math.floor(m / 60), mm = m % 60; return ((h ? h + 'h' : '') + (mm ? ' ' + mm + 'min' : (h ? '' : '0min'))).trim() }
   const dateTxt = ev.start ? new Date(ev.start).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) : ''
-  const save = () => onSave(title, repeat === 'keep' ? undefined : REPEAT_RULES[repeat], description, location)
+
+  // The repeat choices. "Keep current repeat" only shows for an event that
+  // already recurs, so a one-off never lists "Does not repeat" twice.
+  const OPTS = [
+    ...(isRecurring ? [['keep', 'Keep current repeat']] : []),
+    ['none', 'Does not repeat'],
+    ['daily', 'Every day'],
+    ['weekdays', 'Every weekday'],
+    ['weekly', 'Every week'],
+    ['monthly', 'Every month'],
+    ['custom', 'Custom…']
+  ]
+  const curLabel = (OPTS.find((o) => o[0] === repeat) || ['', 'Does not repeat'])[1]
+  const DOW = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']
+
+  // undefined = leave the series untouched; [] = strip recurrence; otherwise an
+  // RRULE. Custom builds FREQ + INTERVAL + BYDAY + an optional UNTIL end date.
+  const buildRule = () => {
+    if (repeat === 'keep') return undefined
+    if (repeat === 'none') return []
+    if (repeat === 'daily') return ['RRULE:FREQ=DAILY']
+    if (repeat === 'weekdays') return ['RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR']
+    if (repeat === 'weekly') return ['RRULE:FREQ=WEEKLY']
+    if (repeat === 'monthly') return ['RRULE:FREQ=MONTHLY']
+    const freq = unit === 'day' ? 'DAILY' : unit === 'month' ? 'MONTHLY' : 'WEEKLY'
+    let parts = 'FREQ=' + freq
+    const n = Math.max(1, parseInt(ivl, 10) || 1)
+    if (n > 1) parts += ';INTERVAL=' + n
+    if (unit === 'week' && days.length) parts += ';BYDAY=' + days.slice().sort((a, b) => a - b).map((d) => DOW[d]).join(',')
+    if (until) { const [y, m, d] = until.split('-'); parts += ';UNTIL=' + y + m + d + 'T235959Z' }
+    return ['RRULE:' + parts]
+  }
+  const save = () => onSave(title, buildRule(), description, location)
   return (
     <div className="ev-scrim" onMouseDown={onCancel}>
       <aside className="ev-panel" onMouseDown={(e) => e.stopPropagation()}>
@@ -969,17 +1006,55 @@ function EditModal({ ev, onSave, onDelete, onCancel }) {
             <span className="ev-dur">{durTxt(dur)}</span>
           </div>
           {dateTxt && <div className="ev-row"><span className="ev-ic-sp" /><span className="ev-date">{dateTxt}</span></div>}
-          <div className="ev-row">
+          <div className="ev-row ev-row-dd">
             <EvIcon name="repeat" />
-            <select className="ev-select" value={repeat} onChange={(e) => setRepeat(e.target.value)}>
-              <option value="keep">{isRecurring ? 'Every week' : 'Does not repeat'}</option>
-              <option value="none">Does not repeat</option>
-              <option value="daily">Every day</option>
-              <option value="weekdays">Every weekday</option>
-              <option value="weekly">Every week</option>
-              <option value="monthly">Every month</option>
-            </select>
+            <div className="ev-dd-wrap">
+              <button type="button" className="ev-dd" onClick={() => setMenuOpen((o) => !o)}>
+                <span>{curLabel}</span>
+                <svg className="ev-dd-caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+              </button>
+              {menuOpen && (
+                <>
+                  <div className="ev-menu-scrim" onMouseDown={() => setMenuOpen(false)} />
+                  <div className="ev-menu">
+                    {OPTS.map(([v, l]) => (
+                      <button key={v} type="button" className={'ev-menu-item' + (repeat === v ? ' on' : '')} onClick={() => { setRepeat(v); setMenuOpen(false) }}>
+                        <span className="ev-check">{repeat === v ? '✓' : ''}</span>{l}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
+          {repeat === 'custom' && (
+            <div className="ev-row top">
+              <span className="ev-ic-sp" />
+              <div className="ev-cust">
+                <div className="ev-cust-line">
+                  <span>Every</span>
+                  <input className="ev-num" type="number" min="1" value={ivl} onChange={(e) => setIvl(e.target.value)} />
+                  <div className="ev-seg">
+                    {[['day', 'day'], ['week', 'week'], ['month', 'month']].map(([v, l]) => (
+                      <button key={v} type="button" className={unit === v ? 'on' : ''} onClick={() => setUnit(v)}>{l}{(parseInt(ivl, 10) || 1) > 1 ? 's' : ''}</button>
+                    ))}
+                  </div>
+                </div>
+                {unit === 'week' && (
+                  <div className="ev-days">
+                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                      <button key={i} type="button" className={days.includes(i) ? 'on' : ''} onClick={() => setDays((p) => p.includes(i) ? p.filter((x) => x !== i) : [...p, i])}>{d}</button>
+                    ))}
+                  </div>
+                )}
+                <div className="ev-cust-line">
+                  <span>Until</span>
+                  <input className="ev-until" type="date" value={until} onChange={(e) => setUntil(e.target.value)} />
+                  {until ? <button type="button" className="ev-clear" onClick={() => setUntil('')}>clear</button> : <span className="ev-forever">forever</span>}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="ev-div" />
